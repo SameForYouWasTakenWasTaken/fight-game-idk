@@ -14,11 +14,7 @@ class Player : public Entity
 public:
 	std::vector<Entity*> m_Bullets;
 	Player();
-
-
 private:
-	void ShootProjectile(float dt);
-
 	void OnUpdate(float dt) override;
-
+	void OnDraw() override;
 };

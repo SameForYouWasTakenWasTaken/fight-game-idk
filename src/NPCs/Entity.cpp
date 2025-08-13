@@ -1,5 +1,10 @@
 #include "NPCs/Entity.h"
 
+/*
+@param texturePath The path to the texture of the entity
+@param name The name of the entity
+@param hp The health of the entity
+*/
 Entity::Entity(
 	const char* texturePath,
 	const std::string name,
@@ -14,14 +19,16 @@ void Entity::TakeDamage(float damage)
 		damage = damage * -1;
 
 	m_Hp -= damage;
-	// Health can't be less than 0
-	if (m_Hp < 0)
-		m_Hp = 0;
+	if (m_Hp <= 0)
+	{
+		m_IsAlive = false;
+	}
 }
 
 void Entity::CommonDraw()
 {
-	DrawTexture(m_Texture, m_Position.x, m_Position.y, WHITE);
+	if (this != nullptr)
+		DrawTexture(m_Texture, m_Position.x, m_Position.y, WHITE);
 }
 
 void Entity::CommonUpdate(float dt)
@@ -29,10 +36,11 @@ void Entity::CommonUpdate(float dt)
 	
 }
 
-bool Entity::CheckCollision(Entity& other)
+bool Entity::CheckCollision(std::shared_ptr<Entity> other)
 {
-	Vector2 otherPosition = other.GetPosition();
-	Texture2D otherTexture = other.GetTexture();
+	if (this == other.get()) return false; // It can't collide with itself
+	Vector2 otherPosition = other->GetPosition();
+	Texture2D otherTexture = other->GetTexture();
 
 	float height = otherTexture.height;
 	float width = otherTexture.width;
@@ -46,6 +54,6 @@ bool Entity::CheckCollision(Entity& other)
 	if (m_Position.y + m_Texture.height < otherPosition.y)
 		return false;
 
-
+	spdlog::info("Hit!");
 	return true;
 }
