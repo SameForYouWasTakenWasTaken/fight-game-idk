@@ -6,6 +6,15 @@ Game::Game(int height, int width, const char* title)
 	: m_Height(height), m_Width(width), m_Title(title)
 {}
 
+/**
+ * @brief Initializes the window and runs the main game loop.
+ *
+ * Opens a window using the Game instance's width, height, and title, configures logging
+ * and target framerate, creates initial game entities (player and enemy) and stores
+ * them in the game's entity list, then enters the main loop. Each frame it calculates
+ * delta time, calls update(dt), clears the screen, calls draw() to render entities,
+ * and continues until the window is closed. Closes the window on exit.
+ */
 void Game::run()
 {
 	InitWindow(m_Width, m_Height, m_Title);
@@ -36,6 +45,23 @@ void Game::run()
 	CloseWindow();
 }
 
+/**
+ * @brief Update all game entities for the current frame.
+ *
+ * Processes each entity in m_Entities: advances simulation by dt, runs collision
+ * checks, prunes bullets from any Player that have collided, and finally
+ * removes entities flagged as not alive.
+ *
+ * @param dt Frame delta time in seconds used to advance entity state.
+ *
+ * Notes:
+ * - Null entries in m_Entities are ignored.
+ * - Player detection is performed via dynamic_cast; when a Player is found,
+ *   its m_Bullets vector is filtered to remove bullets whose CheckCollision
+ *   returns true.
+ * - Entities that return false from IsAlive() after updates are removed from
+ *   m_Entities at the end of the call.
+ */
 void Game::update(float dt)
 {
 	for (const auto& entity : m_Entities)
@@ -67,6 +93,13 @@ void Game::update(float dt)
 }
 
 
+/**
+ * @brief Render all game entities.
+ *
+ * Iterates over the current entity list and invokes each entity's Draw() method
+ * to render it to the active frame. Entities are drawn in the order they
+ * appear in m_Entities.
+ */
 void Game::draw()
 {
 	for (const auto& entity : m_Entities)

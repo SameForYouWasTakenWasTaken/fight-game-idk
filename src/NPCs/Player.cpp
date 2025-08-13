@@ -2,16 +2,52 @@
 #include "NPCs/Projectiles/Bullet.h"
 static bool aiming_left = false;
 
+/**
+ * @brief Constructs a Player with the default visual and movement settings.
+ *
+ * Initializes a Player entity using the idle texture ("resources/Player/idle.png"),
+ * sets its name to "Player", and configures its movement speed to 300.f.
+ */
 Player::Player()
 	: Entity("resources/Player/idle.png", "Player", 300.f)
 { }
 
+/**
+ * @brief Renders all bullets owned by the player.
+ *
+ * Calls each bullet's Draw() method so the player's active projectiles are rendered
+ * to the current render target.
+ */
 void Player::OnDraw()
 {
 	for (auto bullet : m_Bullets)
 		bullet->Draw();
 }
 
+/**
+ * @brief Process input, update player movement, handle firing, and manage bullets for this frame.
+ *
+ * This updates the player's position and texture based on keyboard input (W/A/S/D),
+ * sets the shooting direction flag, spawns bullets when firing input is received,
+ * removes out-of-bounds bullets, and updates all active bullets.
+ *
+ * Movement:
+ * - A/D move left/right and set the shooting direction (aiming_left).
+ * - W/S take priority over A/D and force the shooting direction to right.
+ *
+ * Firing:
+ * - Pressing F or the left mouse button creates a new Bullet owned by this Player,
+ *   positioned at the center of the player's current texture area and added to m_Bullets.
+ *
+ * Bullet lifecycle:
+ * - Bullets whose x position is > 5000 or < -5000 are removed from m_Bullets and deleted.
+ * - Remaining bullets are updated each frame via bullet->Update(dt).
+ *
+ * Side effects: modifies m_Position, m_Texture, aiming_left, allocates/deletes Bullet instances,
+ * and mutates m_Bullets.
+ *
+ * @param dt Frame delta time in seconds.
+ */
 void Player::OnUpdate(float dt)
 {
 
